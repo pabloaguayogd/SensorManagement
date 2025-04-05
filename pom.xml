@@ -10,62 +10,84 @@
   <packaging>jar</packaging>
 
   <name>sensor-app</name>
-  <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>17</java.version> <!-- Cambia según tu versión de Java -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <vertx.version>4.4.2</vertx.version>
   </properties>
 
   <dependencies>
+
     <!-- Vert.x Core -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>4.4.2</version>
+      <version>${vertx.version}</version>
     </dependency>
 
-    <!-- Vert.x Web -->
+    <!-- Vert.x Web (para endpoints REST) -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
-      <version>4.4.2</version>
+      <version>${vertx.version}</version>
     </dependency>
 
-    <!-- Vert.x JDBC Client -->
+    <!-- Vert.x MySQL Client -->
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-jdbc-client</artifactId>
-      <version>4.4.2</version>
+      <artifactId>vertx-mysql-client</artifactId>
+      <version>${vertx.version}</version>
     </dependency>
 
-    <!-- MySQL Connector -->
+    <!-- MySQL JDBC Driver (necesario para conexión con MySQL) -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.33</version>
     </dependency>
 
-    <!-- Gson -->
+    <!-- Gson para JSON (serialización/deserialización) -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.8.6</version>
     </dependency>
 
-    <!-- JUnit (test) -->
+    <!-- JUnit (tests) -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.9.3</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-    	<groupId>asd</groupId>
-    	<artifactId>asd</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
+
   </dependencies>
 
+  <build>
+    <plugins>
+      <!-- Plugin de compilación para Java -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.10.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+
+      <!-- Plugin para ejecutar clases Java desde Maven -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <mainClass>com.sensor.app.Main</mainClass> <!-- Cambia por tu clase Main -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
