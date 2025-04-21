@@ -33,6 +33,11 @@
       <artifactId>vertx-web</artifactId>
       <version>${vertx.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web-client</artifactId>
+      <version>4.5.1</version> <!-- o la versión más reciente -->
+    </dependency>
 
     <!-- Vert.x MySQL Client -->
     <dependency>

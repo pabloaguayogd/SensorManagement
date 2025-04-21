@@ -1,12 +1,13 @@
 package com.sensor.app.mysql.rest;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
+
+import com.google.gson.*;
+import com.sensor.app.mysql.MySQLConnection;
 import com.sensor.app.mysql.entities.Actuator;
 import com.sensor.app.mysql.entities.ActuatorState;
 import com.sensor.app.mysql.entities.Device;
@@ -14,6 +15,7 @@ import com.sensor.app.mysql.entities.Group;
 import com.sensor.app.mysql.entities.Sensor;
 import com.sensor.app.mysql.entities.SensorValue;
 
+import com.sensor.app.util.LocalDateTimeAdapter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
@@ -29,22 +31,12 @@ public class RestAPIVerticle extends AbstractVerticle {
 
     private MySQLPool client;
     private Gson gson = new GsonBuilder()
-    	    .registerTypeAdapter(LocalDateTime.class,
-    	        (JsonDeserializer<LocalDateTime>) (json, type, context) ->
-    	            LocalDateTime.parse(json.getAsString()))
-    	    .create();
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .create();
 
     public void start(Promise<Void> startPromise) {
         // Configuración de conexión a la base de datos
-        MySQLConnectOptions connectOptions = new MySQLConnectOptions()
-                .setPort(3307)
-                .setHost("localhost")
-                .setDatabase("sensor_management")
-                .setUser("root")
-                .setPassword("RB22raba."); // Cambia si tu contraseña es diferente
-
-        PoolOptions poolOptions = new PoolOptions().setMaxSize(10);
-        client = MySQLPool.pool(vertx, connectOptions, poolOptions);
+        client = MySQLConnection.getClient();
 
         // Configuración del router HTTP
         Router router = Router.router(vertx);
@@ -650,9 +642,11 @@ private void handleDeleteGroup(RoutingContext ctx) {
 //POST /api/sensorValues
 private void handleCreateSensorValue(RoutingContext ctx) {
     try {
-        System.out.println("JSON recibido: " + ctx.getBodyAsString());
 
-        SensorValue sensorValue = gson.fromJson(ctx.getBodyAsString(), SensorValue.class);
+
+        System.out.println("JSON recibido: " + JsonParser.parseString(ctx.body().asString()).getAsString());
+
+        SensorValue sensorValue = gson.fromJson(JsonParser.parseString(ctx.body().asString()).getAsString(), SensorValue.class);
         System.out.println("SensorValue parseado: " + sensorValue);
 
         String sql = "INSERT INTO sensorvalue (sensor_id, value, timestamp) VALUES (?, ?, ?)";
@@ -699,13 +693,9 @@ private void handleGetSensorValuesBySensorId(RoutingContext ctx) {
                  value.setSensorId(row.getInteger("sensor_id"));
                  value.setValue(row.getFloat("value"));
 
-                 // Manejar timestamp null con seguridad
-                 String timestampStr = row.getString("timestamp");
-                 LocalDateTime timestamp = null;
-                 if (timestampStr != null) {
-                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                     timestamp = LocalDateTime.parse(timestampStr, formatter);
-                 }
+
+                 LocalDateTime timestamp = row.get(LocalDateTime.class,"timestamp");
+
                  value.setTimestamp(timestamp);
 
                  values.add(value);
