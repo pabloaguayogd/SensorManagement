@@ -3,15 +3,21 @@ package com.sensor.app.mysql.rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSyntaxException;
 import com.sensor.app.mysql.entities.ActuatorState;
 import com.sensor.app.mysql.entities.SensorValue;
 import com.sensor.app.mysql.servicios.SensorValueServicio;
 import com.sensor.app.util.LocalDateTimeAdapter;
+
+import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.mqtt.MqttClient;
+import io.vertx.mqtt.MqttClientOptions;
+import io.vertx.core.buffer.Buffer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ServiciosVerticle extends AbstractVerticle {
-
+	
     private final static Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
 
@@ -47,7 +53,11 @@ public class ServiciosVerticle extends AbstractVerticle {
                         startPromise.fail(http.cause());
                     }
                 });
-
+        
+        /* ---------------------------------------------MQTT--------------------------------------------------------*/ 
+        
+        MqttClient mqttClient = MqttClient.create(vertx, new MqttClientOptions().setAutoKeepAlive(true));
+        mqttClient.connect(1883, "192.168.34.161");
     }
 
 
@@ -57,8 +67,20 @@ public class ServiciosVerticle extends AbstractVerticle {
         Float valor = routingContext.body().asJsonObject().getFloat("valor");
 
         try{
+        	// TODO Necesitamos la id del grupo para poder publicar con MQTT
+        	// Comprobar si el valor pasa el umbral (ON) si no lo pasa (OFF)
+        	// Los valores se reciben desde la API no necesitamos subscribirnos a nada ya que usaremos MQTT sólo para publicar.
             SensorValueServicio.addSensorValue(id_sensor, valor);
-
+            // Leer el grupo del dispositivo
+            SensorValueServicio.getGroupOfDevice(id_sensor);
+            
+            /*if (valor > umbral)
+             *  mqttClient.publish("GRUPO1", Buffer.buffer("ON"), MqttQoS.AT_LEAST_ONCE, false, false);
+             *  else
+             *  mqttClient.publish("GRUPO1", Buffer.buffer("OFF"), MqttQoS.AT_LEAST_ONCE, false, false);
+             */
+            
+            
             routingContext.response()
                     .setStatusCode(201)
                     .putHeader("Content-Type", "application/json")

@@ -67,6 +67,13 @@
       <version>5.9.3</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- MQTT -->
+    <dependency>
+	  <groupId>io.vertx</groupId>
+	  <artifactId>vertx-mqtt</artifactId>
+	  <version>4.0.3</version>    
+    </dependency>
 
   </dependencies>
 
