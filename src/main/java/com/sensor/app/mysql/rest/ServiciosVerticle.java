@@ -26,6 +26,8 @@ import java.util.concurrent.ExecutionException;
 
 public class ServiciosVerticle extends AbstractVerticle {
 	
+	MqttClient mqttClient;
+	
     private final static Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
 
@@ -57,7 +59,7 @@ public class ServiciosVerticle extends AbstractVerticle {
         /* ---------------------------------------------MQTT--------------------------------------------------------*/ 
         
         MqttClient mqttClient = MqttClient.create(vertx, new MqttClientOptions().setAutoKeepAlive(true));
-        mqttClient.connect(1883, "192.168.34.161");
+        mqttClient.connect(1883, "10.100.134.199");
     }
 
 
@@ -72,7 +74,21 @@ public class ServiciosVerticle extends AbstractVerticle {
         	// Los valores se reciben desde la API no necesitamos subscribirnos a nada ya que usaremos MQTT sólo para publicar.
             SensorValueServicio.addSensorValue(id_sensor, valor);
             // Leer el grupo del dispositivo
-            SensorValueServicio.getGroupOfDevice(id_sensor);
+            int groupID = SensorValueServicio.getGroupOfDevice(id_sensor);
+            String strGroupID= String.valueOf(groupID);
+            
+            // Umbral es el límite establecido para que al sobrepasar se encienda el actuador
+            float umbral = 100;
+            List<SensorValue> valuesList = SensorValueServicio.getLatestSensorValue(id_sensor, 10);
+            for(int i = 0; i < valuesList.size(); i++) {
+            	if (valuesList.get(i).getValue() > umbral) {
+            		// TODO solucionar error de clase
+            		mqttClient.publish(strGroupID, Buffer.buffer("ON"), MqttQoS.AT_LEAST_ONCE, false, false);
+            		}
+            	else {
+            		mqttClient.publish(strGroupID, Buffer.buffer("OFF"), MqttQoS.AT_LEAST_ONCE, false, false);
+            	}
+            }
             
             /*if (valor > umbral)
              *  mqttClient.publish("GRUPO1", Buffer.buffer("ON"), MqttQoS.AT_LEAST_ONCE, false, false);
