@@ -1,17 +1,19 @@
-package com.sensor.app.mysql.rest;
+package com.sensor.app.verticles;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSyntaxException;
-import com.sensor.app.mysql.entities.ActuatorState;
-import com.sensor.app.mysql.entities.SensorValue;
-import com.sensor.app.mysql.servicios.SensorValueServicio;
+import com.sensor.app.entities.AlarmState;
+import com.sensor.app.entities.SensorValue;
+import com.sensor.app.servicios.SensorValueServicio;
+import com.sensor.app.util.CRUDConnection;
+import com.sensor.app.util.ControllerErrors;
 import com.sensor.app.util.LocalDateTimeAdapter;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -33,39 +35,53 @@ public class ServiciosVerticle extends AbstractVerticle {
 
             .create();
 
-
+    private static final Logger logger = LoggerFactory.getLogger(ServiciosVerticle.class);
     public void start(Promise<Void> startPromise) {
+        CRUDConnection.getWebClient(getVertx());
+
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
+        // Middleware de logging
+        router.route().handler(ctx -> {
+            long start = System.currentTimeMillis();
+
+            ctx.addBodyEndHandler(v -> {
+                long duration = System.currentTimeMillis() - start;
+                logger.info(String.join(" ", ctx.request().method().toString(), ctx.request().path(), String.valueOf(ctx.response().getStatusCode()), String.valueOf(duration)+"ms" ));
+            });
+
+            ctx.next();
+        });
+
         router.post("/api/business/sensorData").handler(this::handleAddSensorData);
-        router.get("/api/business/sensorValues/:id_sensor/latest").handler(this::handleLatestSensorValues);
-        router.get("/api/business/actuatorStates/:id_actuador/latest").handler(this::handleLatestActuatorStates);
-        router.get("/api/business/group/:id_grupo/sensorValues/latest").handler(this::handleGroupLatestSensorValue);
-        router.get("/api/business/group/:id_grupo/actuatorStates/latest").handler(this::handleGroupLatestActuatorState);
+        router.get("/api/business/sensorValues/:sensor_id/latest").handler(this::handleLatestSensorValues);
+        router.get("/api/business/alarmState/:alarm_id/latest").handler(this::handleLatestAlarmStates);
+        router.get("/api/business/group/:group_id/sensorValues/latest").handler(this::handleGroupLatestSensorValue);
+        router.get("/api/business/group/:group_id/alarmStates/latest").handler(this::handleGroupLatestAlarmState);
 
         vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(8081, http -> {
                     if (http.succeeded()) {
-                        System.out.println("Capa de lógica iniciado en http://localhost:8081");
+                        System.out.println("Capa de servicios iniciado en http://localhost:8081");
                         startPromise.complete();
                     } else {
-                        System.out.println("Error al iniciar servidor HTTP: " + http.cause().getMessage());
+                        System.out.println(ControllerErrors.ERROR_INICIAR_SERVER + http.cause().getMessage());
                         startPromise.fail(http.cause());
                     }
                 });
         
-        /* ---------------------------------------------MQTT--------------------------------------------------------*/ 
-        
+        /* ---------------------------------------------MQTT--------------------------------------------------------
+
         MqttClient mqttClient = MqttClient.create(vertx, new MqttClientOptions().setAutoKeepAlive(true));
-        mqttClient.connect(1883, "10.100.134.199");
+        mqttClient.connect(1883, "10.100.134.199");*/
     }
 
 
     private void handleAddSensorData(RoutingContext routingContext){
 
-        Integer id_sensor = routingContext.body().asJsonObject().getInteger("id_sensor");
+        Integer id_sensor = routingContext.body().asJsonObject().getInteger("sensor_id");
         Float valor = routingContext.body().asJsonObject().getFloat("valor");
 
         try{
@@ -115,7 +131,7 @@ public class ServiciosVerticle extends AbstractVerticle {
     }
 
     private void handleLatestSensorValues(RoutingContext routingContext){
-        Integer id_sensor = Integer.parseInt(routingContext.pathParam("id_sensor"));
+        Integer id_sensor = Integer.parseInt(routingContext.pathParam("sensor_id"));
 
         try{
             List<SensorValue> res =  SensorValueServicio.getLatestSensorValue(id_sensor,10);
@@ -137,11 +153,11 @@ public class ServiciosVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleLatestActuatorStates(RoutingContext routingContext){
+    private void handleLatestAlarmStates(RoutingContext routingContext){
         Integer id_actuador = Integer.parseInt(routingContext.pathParam("id_actuador"));
 
         try{
-            List<ActuatorState> res =  SensorValueServicio.getLatestActuatorState(id_actuador,10);
+            List<AlarmState> res =  SensorValueServicio.getLatestActuatorState(id_actuador,10);
 
 
 
@@ -150,7 +166,7 @@ public class ServiciosVerticle extends AbstractVerticle {
             routingContext.response()
                     .setStatusCode(200)
                     .putHeader("Content-Type", "application/json")
-                    .end("{\"msg\": \"Últimos 10 valores del actuador "+id_actuador+".\", \"data\": "+rawDataJson+"}");
+                    .end("{\"msg\": \"Últimos 10 activaciones de la alarma "+id_actuador+".\", \"data\": "+rawDataJson+"}");
 
         }catch (RuntimeException error){
             routingContext.response()
@@ -185,11 +201,11 @@ public class ServiciosVerticle extends AbstractVerticle {
 
     }
 
-    private void handleGroupLatestActuatorState(RoutingContext routingContext){
-        Integer id_group = Integer.parseInt(routingContext.pathParam("id_grupo"));
+    private void handleGroupLatestAlarmState(RoutingContext routingContext){
+        Integer id_group = Integer.parseInt(routingContext.pathParam("group_id"));
 
         try{
-            Map<Integer, ActuatorState> sens_val =  SensorValueServicio.getLastestStateOfActuatorInGroup(id_group);
+            Map<Integer, AlarmState> sens_val =  SensorValueServicio.getLastestStateOfActuatorInGroup(id_group, getVertx());
 
             String rawDataJson = gson.toJson(sens_val);
 

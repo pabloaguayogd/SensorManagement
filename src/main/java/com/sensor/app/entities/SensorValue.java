@@ -1,30 +1,46 @@
-package com.sensor.app.mysql.entities;
+package com.sensor.app.entities;
+
+import io.vertx.sqlclient.Row;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SensorValue {
 
-    private int id;
+    public static final String CREATE_SENSOR_VALUE = "INSERT INTO Sensor_value (sensor_id, value, timestamp) VALUES (?, ?, ?)";
+    public static final String GET_SENSOR_VALUE_ID = "SELECT * FROM Sensor_value WHERE sensor_id = ?";
+
+    private int sensor_value_id;
     private int sensorId;
     private float value;
     private LocalDateTime timestamp;
 
     public SensorValue() {}
 
-    public SensorValue(int id, int sensorId, float value, LocalDateTime timestamp) {
-        this.id = id;
+    public SensorValue(Row row) {
+
+        LocalDateTime timestamp = row.get(LocalDateTime.class,"timestamp");
+
+        setSensor_value_id(row.getInteger("id"));
+        setSensorId(row.getInteger("sensor_id"));
+        setValue(row.getFloat("value"));
+        setTimestamp(timestamp);
+
+    }
+
+    public SensorValue(int sensor_value_id, int sensorId, float value, LocalDateTime timestamp) {
+        this.sensor_value_id = sensor_value_id;
         this.sensorId = sensorId;
         this.value = value;
         this.timestamp = timestamp;
     }
 
-    public int getId() {
-        return id;
+    public int getSensor_value_id() {
+        return sensor_value_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setSensor_value_id(int sensor_value_id) {
+        this.sensor_value_id = sensor_value_id;
     }
 
     public int getSensorId() {
@@ -53,7 +69,7 @@ public class SensorValue {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sensorId, value, timestamp);
+        return Objects.hash(sensor_value_id, sensorId, value, timestamp);
     }
 
     @Override
@@ -61,7 +77,7 @@ public class SensorValue {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         SensorValue other = (SensorValue) obj;
-        return id == other.id &&
+        return sensor_value_id == other.sensor_value_id &&
                sensorId == other.sensorId &&
                Float.compare(value, other.value) == 0 &&
                Objects.equals(timestamp, other.timestamp);
@@ -69,7 +85,7 @@ public class SensorValue {
 
     @Override
     public String toString() {
-        return "SensorValue [id=" + id + ", sensorId=" + sensorId +
+        return "SensorValue [id=" + sensor_value_id + ", sensorId=" + sensorId +
                ", value=" + value + ", timestamp=" + timestamp + "]";
     }
 }
