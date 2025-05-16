@@ -4,9 +4,11 @@
 #include "ArduinoJson.h"
 #include "DHT.h"
 
+
 const char* ssid = "Hase caló";
 const char* password = "WtfQueCalo19.";
 const char* mqtt_server = "192.168.245.161";
+
 
 String clientId = "ESP32 test";
 const char* mqtt_username = "admin";
@@ -15,7 +17,7 @@ const char* mqtt_password = "password";
 // SENSOR
 const char* temperatura_topic = "casa/despacho/temperatura";
 #define DHTPIN 4 // Probar con pin 2 también
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
  
 WiFiClient espClient;
@@ -42,12 +44,12 @@ void setup_wifi() {
   Serial.println(ssid);
  
   WiFi.begin(ssid, password);
- 
+  
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
- 
+  
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
