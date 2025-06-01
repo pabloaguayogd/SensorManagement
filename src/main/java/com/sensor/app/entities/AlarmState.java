@@ -7,13 +7,14 @@ import java.util.Objects;
 
 public class AlarmState {
 
-    public static final String CREATE_ALARM_STATE = "INSERT INTO Alarm_state (actuator_id, state, timestamp) VALUES (?, ?, ?)";
-    public static final String GET_ALARM_STATE_ID = "SELECT * FROM Alarm_state WHERE actuator_id = ?";
+    public static final String CREATE_ALARM_STATE = "INSERT INTO Alarm_state (alarm_id, state, timestamp) VALUES (?, ?, ?)";
+    public static final String GET_ALARM_STATE_ID = "SELECT * FROM Alarm_state WHERE alarm_id = ?";
+    public static final String GET_ALARM_STATE_IN_GROUP = "SELECT Alarm.name, Alarm_state.alarm_id, Alarm_state.state, Alarm_state.timestamp  FROM Alarm_state INNER JOIN Alarm ON Alarm.alarm_id = Alarm_state.alarm_id INNER JOIN Device ON Alarm.device_id = Device.device_id WHERE group_id = ? ORDER BY Alarm_state.timestamp DESC LIMIT 10 ";
 
 
 
     private int alarm_state_id;
-    private int actuatorId;
+    private int alarm_id;
     private boolean state;
     private LocalDateTime timestamp;
 
@@ -22,7 +23,7 @@ public class AlarmState {
     public AlarmState(Row row) {
 
         setAlarm_state_id(row.getInteger("id"));
-        setActuatorId(row.getInteger("actuator_id"));
+        setActuatorId(row.getInteger("alarm_id"));
         setState(row.getBoolean("state"));
         setTimestamp(row.getLocalDateTime("timestamp"));
 
@@ -37,11 +38,11 @@ public class AlarmState {
     }
 
     public int getActuatorId() {
-        return actuatorId;
+        return alarm_id;
     }
 
     public void setActuatorId(int actuatorId) {
-        this.actuatorId = actuatorId;
+        this.alarm_id = actuatorId;
     }
 
     public boolean isState() {
@@ -62,7 +63,7 @@ public class AlarmState {
 
     @Override
     public int hashCode() {
-        return Objects.hash(alarm_state_id, actuatorId, state, timestamp);
+        return Objects.hash(alarm_state_id, alarm_id, state, timestamp);
     }
 
     @Override
@@ -71,14 +72,14 @@ public class AlarmState {
         if (obj == null || getClass() != obj.getClass()) return false;
         AlarmState other = (AlarmState) obj;
         return alarm_state_id == other.alarm_state_id &&
-               actuatorId == other.actuatorId &&
+               alarm_id == other.alarm_id &&
                state == other.state &&
                Objects.equals(timestamp, other.timestamp);
     }
 
     @Override
     public String toString() {
-        return "ActuatorState [id=" + alarm_state_id + ", actuatorId=" + actuatorId +
+        return "ActuatorState [id=" + alarm_state_id + ", actuator_id=" + alarm_id +
                ", state=" + state + ", timestamp=" + timestamp + "]";
     }
 }

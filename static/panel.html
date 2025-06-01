@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureHome - Gestión de Dispositivos</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <h1>SecureHome</h1>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">Gestión de Dispositivos</h2>
+    </div>
+
+    <!-- Botones principales -->
+    <div class="main-actions">
+        <button class="action-btn" id="addGroupBtn">
+            <i class="fas fa-plus"></i> Agregar Grupo
+        </button>
+    </div>
+
+    <!-- Grupos de dispositivos -->
+    <div class="groups-container" id="groupsContainer">
+        <!-- Los grupos se añadirán dinámicamente con JavaScript -->
+    </div>
+    <div class="devices-table-container">
+        <table class="devices-table">
+            <thead>
+            <h2>Valores del sensor</h2>
+            <tr>
+                <th>Nombre del sensor</th>
+                <th>ID del sensor</th>
+                <th>Valor registrado</th>
+                <th>Timestamp</th>
+            </tr>
+
+            <tbody id="tabla-sensor">
+            </tbody>
+
+            </thead>
+        </table>
+        <table class="devices-table">
+            <thead>
+            <h2>Ultimas activaciones de las alarmas</h2>
+            <tr>
+                <th>Nombre de la alarma</th>
+                <th>ID de la alarma</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+
+            <tbody id="tabla-alarmas" >
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-links">
+        <a href="#">Términos de Servicio</a>
+        <a href="#">Política de Privacidad</a>
+        <a href="#">Soporte Técnico</a>
+        <a href="#">Contacto</a>
+    </div>
+    <div class="copyright">
+        &copy; 2023 SecureHome - Sistema de Seguridad para el Hogar. Todos los derechos reservados.
+    </div>
+</footer>
+
+<!-- Modal para agregar grupo -->
+<div class="modal" id="groupModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Agregar Nuevo Grupo</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="groupForm">
+                <div class="form-group">
+                    <label for="groupName">Nombre del Grupo</label>
+                    <input type="text" id="groupName" required placeholder="Ej: Exterior, Interior, Garaje">
+                </div>
+                <div class="form-group">
+                    <label for="groupHomeId">ID de la casa</label>
+                    <input type="number" id="groupHomeId" required>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" id="cancelGroupBtn">Cancelar</button>
+            <button class="modal-btn primary" id="saveGroupBtn">Guardar Grupo</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar dispositivo -->
+<div class="modal" id="deviceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Agregar Nuevo Dispositivo</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="deviceForm">
+                <div class="form-group">
+                    <label for="deviceName">Nombre del Dispositivo</label>
+                    <input type="text" id="deviceName" required placeholder="Ej: Cámara Principal, Sensor de Puerta">
+                </div>
+                <div class="form-group">
+                    <label for="deviceType">Tipo de Dispositivo</label>
+                    <select id="deviceType" required>
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="sensor">Sensor</option>
+                        <option value="alarm">Alarma</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="deviceGroupId">ID del grupo</label>
+                    <input type="number" id="deviceGroupId">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" id="cancelDeviceBtn">Cancelar</button>
+            <button class="modal-btn primary" id="saveDeviceBtn">Guardar Dispositivo</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/panel.js"></script>
+</body>
+</html>

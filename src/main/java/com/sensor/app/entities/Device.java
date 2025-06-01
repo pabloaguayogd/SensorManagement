@@ -6,30 +6,30 @@ import java.util.Objects;
 
 public class Device {
 
-    public static final String CREATE_DEVICE = "INSERT INTO Device (name, group_id) VALUES (?, ?)";
-    public static final String GET_DEVICE_ID = "SELECT * FROM Device WHERE id = ?";
+    public static final String CREATE_DEVICE = "INSERT IGNORE INTO Device (name, group_id) VALUES (?, ?)";
+    public static final String GET_DEVICE_ID = "SELECT * FROM Device WHERE device_id = ?";
     public static final String GET_ALL_DEVICE = "SELECT * FROM Device";
-    public static final String UPDATE_DEVICE = "UPDATE Device SET name = ?, group_id = ? WHERE id = ?";
-    public static final String DELETE_DEVICE = "DELETE FROM Device WHERE id = ?";
+    public static final String UPDATE_DEVICE = "UPDATE Device SET name = ?, group_id = ? WHERE device_id = ?";
+    public static final String DELETE_DEVICE = "DELETE FROM Device WHERE device_id = ?";
 
     private int device_id;
     private String name;
-    private int groupId;
+    private int group_id;
 
     public Device() {}
 
     public Device(Row row) {
 
-        setDevice_id(row.getInteger("id"));
+        setDevice_id(row.getInteger("device_id"));
         setName(row.getString("name"));
         setGroupId(row.getInteger("group_id"));
 
     }
 
-    public Device(int device_id, String name, int groupId) {
+    public Device(int device_id, String name, int group_id) {
         this.device_id = device_id;
         this.name = name;
-        this.groupId = groupId;
+        this.group_id = group_id;
     }
 
     public int getDevice_id() {
@@ -49,16 +49,16 @@ public class Device {
     }
 
     public int getGroupId() {
-        return groupId;
+        return group_id;
     }
 
     public void setGroupId(int groupId) {
-        this.groupId = groupId;
+        this.group_id = groupId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(device_id, groupId, name);
+        return Objects.hash(device_id, group_id, name);
     }
 
     @Override
@@ -69,12 +69,12 @@ public class Device {
             return false;
         Device other = (Device) obj;
         return device_id == other.device_id &&
-               groupId == other.groupId &&
+               group_id == other.group_id &&
                Objects.equals(name, other.name);
     }
 
     @Override
     public String toString() {
-        return "Device [id=" + device_id + ", name=" + name + ", groupId=" + groupId + "]";
+        return "Device [id=" + device_id + ", name=" + name + ", group_id=" + group_id + "]";
     }
 }

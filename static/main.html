@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureHome - Seguridad Inteligente para tu Hogar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #10a37f;
+            --primary-dark: #0e8e6d;
+            --secondary: #202123;
+            --light-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-dark: #202123;
+            --text-light: #6e6e80;
+            --border: #e5e5e5;
+            --shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.5rem;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .logo span {
+            font-weight: 700;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: 2px solid var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* Main Content */
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: calc(100vh - 70px);
+        }
+
+        /* Left Panel - Content */
+        .content-panel {
+            padding: 5%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            z-index: 2;
+        }
+
+        .content-panel h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .content-panel p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            max-width: 90%;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(16, 163, 127, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .feature-text h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Right Panel - Image & Testimonials */
+        .image-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            object-fit: cover;
+        }
+
+        .testimonials-container {
+            position: absolute;
+            bottom: 5%;
+            left: 5%;
+            right: 5%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            z-index: 3;
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .testimonial-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .testimonial-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+        }
+
+        .testimonial-control.active {
+            background: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: #ddd;
+            padding: 1.5rem 5%;
+            text-align: center;
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+
+            .image-panel {
+                height: 50vh;
+            }
+
+            .content-panel h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-panel h1 {
+                font-size: 2.2rem;
+            }
+
+            .content-panel p {
+                font-size: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-container {
+                position: relative;
+                margin-top: 2rem;
+                bottom: auto;
+                left: auto;
+                right: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo span {
+                font-size: 1.2rem;
+            }
+
+            .auth-buttons .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .content-panel {
+                padding: 10% 5%;
+            }
+
+            .content-panel h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>SecureHome</span>
+    </div>
+
+    <div class="auth-buttons">
+        <button class="btn btn-outline" id="loginBtn">Iniciar Sesión</button>
+        <button class="btn btn-primary" id="registerBtn">Registrarse</button>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-container">
+    <!-- Left Panel - Content -->
+    <div class="content-panel">
+        <h1>Seguridad Inteligente para tu Hogar</h1>
+        <p>Protege lo que más amas con nuestro sistema de seguridad todo en uno. Monitorea tu hogar desde cualquier lugar, en cualquier momento con nuestra solución premium.</p>
+
+
+
+        <h2 style="margin-bottom: 1.5rem;">Protección Completa en un Solo Sistema</h2>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Vigilancia 24/7</h3>
+                    <p>Cámaras HD con visión nocturna y detección de movimiento</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Alertas Inteligentes</h3>
+                    <p>Notificaciones instantáneas ante cualquier actividad sospechosa</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Control Total</h3>
+                    <p>Gestiona tu seguridad desde cualquier dispositivo móvil</p>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="feature-text">
+                    <h3>Protección Integral</h3>
+                    <p>Detección de humo, inundaciones y accesos no autorizados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel - Image & Testimonials -->
+    <div class="image-panel">
+        <div class="image-container">
+            <img src="https://images.unsplash.com/photo-1600566752355-35792bedcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sistema de seguridad para el hogar">
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-links">
+    </div>
+    <div class="copyright">
+        &copy; 2025 SecureHome - Desarrollado para DAD.
+    </div>
+</footer>
+
+<script>
+    // Simulación de cambio de testimonios
+    const testimonials = [
+        {
+            content: "SecureHome detectó una fuga de gas en mi casa mientras estaba de vacaciones. El sistema alertó a los bomberos inmediatamente. ¡Literalmente salvó mi hogar!",
+            author: "María Cortés, Cliente desde 2021"
+        },
+        {
+            content: "La tranquilidad que me da saber que puedo ver a mis hijos en cualquier momento es invaluable. La aplicación es súper fácil de usar incluso para mis padres.",
+            author: "Javier Rodríguez, Cliente desde 2022"
+        },
+        {
+            content: "Cuando intentaron entrar a mi casa, las cámaras activaron las alarmas y enviaron la ubicación a la policía. Los ladrones huyeron antes de que pudieran robar algo.",
+            author: "Laura Pérez, Cliente desde 2020"
+        }
+    ];
+
+    let currentTestimonial = 0;
+    const testimonialContent = document.querySelector('.testimonial-content');
+    const testimonialAuthor = document.querySelector('.testimonial-author');
+    const controls = document.querySelectorAll('.testimonial-control');
+
+    function updateTestimonial(index) {
+        testimonialContent.textContent = testimonials[index].content;
+        testimonialAuthor.textContent = `- ${testimonials[index].author}`;
+
+        // Actualizar controles
+        controls.forEach((control, i) => {
+            control.classList.toggle('active', i === index);
+        });
+
+        currentTestimonial = index;
+    }
+
+    // Cambiar testimonio automáticamente cada 5 segundos
+    setInterval(() => {
+        const nextIndex = (currentTestimonial + 1) % testimonials.length;
+        updateTestimonial(nextIndex);
+    }, 5000);
+
+    // Permitir cambio al hacer clic en controles
+    controls.forEach((control, index) => {
+        control.addEventListener('click', () => {
+            updateTestimonial(index);
+        });
+    });
+
+    // Botones de autenticación
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        window.location.href = "/login";
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', () => {
+        window.location.href = "/register";
+    });
+
+    // Animación de entrada
+    document.addEventListener('DOMContentLoaded', () => {
+        const elements = [
+            document.querySelector('h1'),
+            document.querySelector('.content-panel p'),
+            ...document.querySelectorAll('.feature-item'),
+            ...document.querySelectorAll('.btn')
+        ];
+
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.style.opacity = 0;
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+                setTimeout(() => {
+                    el.style.opacity = 1;
+                    el.style.transform = 'translateY(0)';
+                }, 50);
+            }, index * 150);
+        });
+    });
+</script>
+</body>
+</html>

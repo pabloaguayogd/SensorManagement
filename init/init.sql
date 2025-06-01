@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS `User` (
     PRIMARY KEY (user_id)
 );
 
+ALTER TABLE `User` ADD UNIQUE KEY `nickname_password`(nickname, password);
+
 CREATE TABLE IF NOT EXISTS Notification (
     notification_id INT(11) NOT NULL AUTO_INCREMENT,
     `timestamp` datetime DEFAULT current_timestamp(),
@@ -30,12 +32,15 @@ CREATE TABLE IF NOT EXISTS `Group` (
   group_id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(100) NOT NULL,
   mqtt_channel varchar(255) NOT NULL,
-  home_id int(11) default null,
-  suppressed tinyint(1) NOT NULL,
+  home_id int(11) NOT NULL,
+  suppressed tinyint(1) DEFAULT NULL,
   PRIMARY KEY (group_id),
   UNIQUE KEY mqtt_channel (mqtt_channel),
-  CONSTRAINT `group_home_ibfk` FOREIGN KEY (home_id) REFERENCES Home (home_id)
+  CONSTRAINT `group_home_ibfk` FOREIGN KEY (home_id) REFERENCES Home (home_id),
+  CONSTRAINT UNIQUE KEY (name, home_id)
 );
+
+
 
 CREATE TABLE IF NOT EXISTS Device (
   device_id int(11) NOT NULL AUTO_INCREMENT,
@@ -43,17 +48,16 @@ CREATE TABLE IF NOT EXISTS Device (
   group_id int(11) DEFAULT NULL,
   PRIMARY KEY (device_id),
   KEY group_id (group_id),
-  CONSTRAINT `device_ibfk_1` FOREIGN KEY (group_id) REFERENCES `Group` (group_id)
+  CONSTRAINT `device_ibfk_1` FOREIGN KEY (group_id) REFERENCES `Group` (group_id),
+  KEY (name, group_id)
 );
 
 CREATE TABLE IF NOT EXISTS Alarm(
   alarm_id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(100) NOT NULL,
   type varchar(50) NOT NULL,
-  identifier varchar(100) NOT NULL,
   device_id int(11) NOT NULL,
   PRIMARY KEY (alarm_id),
-  UNIQUE KEY identifier (identifier),
   KEY device_id (device_id),
   CONSTRAINT `actuator_ibfk_1` FOREIGN KEY (device_id) REFERENCES Device (device_id)
 );
@@ -72,10 +76,8 @@ CREATE TABLE IF NOT EXISTS Sensor (
   sensor_id int(11) NOT NULL AUTO_INCREMENT,
   name varchar(100) NOT NULL,
   type varchar(50) NOT NULL,
-  identifier varchar(100) NOT NULL,
   device_id int(11) NOT NULL,
   PRIMARY KEY (sensor_id),
-  UNIQUE KEY identifier (identifier),
   KEY device_id (device_id),
   CONSTRAINT `sensor_ibfk_1` FOREIGN KEY (device_id) REFERENCES Device (device_id)
 );

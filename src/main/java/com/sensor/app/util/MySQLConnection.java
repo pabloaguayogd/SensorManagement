@@ -21,6 +21,8 @@ public class MySQLConnection {
     }
 
 
+
+
     public static MySQLPool getClient(Vertx vertx){
         if(client == null)
             createConnection(vertx);

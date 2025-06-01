@@ -24,14 +24,14 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>${vertx.version}</version>
+      <version>4.4.0</version>
     </dependency>
 
     <!-- Vert.x Web (para endpoints REST) -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
-      <version>${vertx.version}</version>
+      <version>4.4.0</version>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
@@ -39,11 +39,34 @@
       <version>4.5.1</version> <!-- o la versión más reciente -->
     </dependency>
 
-    <!-- Vert.x MySQL Client -->
+    <!-- Autenticación JDBC -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-jdbc</artifactId>
+      <version>4.4.0</version>
+    </dependency>
+
+    <!-- Cliente MySQL -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-mysql-client</artifactId>
-      <version>${vertx.version}</version>
+      <version>4.4.0</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-sql-client</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+
+
+
+    <!-- (Opcional) JWT para autenticación avanzada -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-jwt</artifactId>
+      <version>4.4.0</version>
     </dependency>
 
     <!-- MySQL JDBC Driver (necesario para conexión con MySQL) -->
@@ -72,8 +95,21 @@
     <dependency>
 	  <groupId>io.vertx</groupId>
 	  <artifactId>vertx-mqtt</artifactId>
-	  <version>4.0.3</version>    
+	  <version>4.4.5</version>
     </dependency>
+
+    <dependency>
+      <groupId>at.favre.lib</groupId>
+      <artifactId>bcrypt</artifactId>
+      <version>0.10.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.15.3</version>
+    </dependency>
+
 
   </dependencies>
 
@@ -85,8 +121,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
+          <source>19</source>
+          <target>19</target>
         </configuration>
       </plugin>
 

@@ -1,8 +1,26 @@
 package com.sensor.app.entities;
 
+import io.vertx.sqlclient.Row;
+
 import java.time.LocalDateTime;
 
 public class Notification {
+
+    public static final String CREATE_NOTIFICATION = "INSERT INTO Notification (timestamp, message, has_read, user_id) VALUES (?, ?, ?, ?)";
+    public static final String GET_NOTIFICATION_ID = "SELECT * FROM Notification WHERE notification_id = ?";
+    public static final String GET_ALL_NOTIFICATION = "SELECT * FROM Notification";
+    public static final String UPDATE_NOTIFICATION = "UPDATE Notification SET timestamp = ?, message = ?, has_read = ?, user_id = ? WHERE notification_id = ?";
+    public static final String DELETE_NOTIFICATION = "DELETE FROM Notification WHERE notification_id = ?";
+
+
+    public Notification(Row row) {
+
+        setTimestamp(row.getLocalDateTime("timestamp"));
+        setMessage(row.getString("message"));
+        setHas_read(row.getBoolean("has_read"));
+        setUser_id(row.getInteger("user_id"));
+
+    }
 
     private Integer notification_id;
     private LocalDateTime timestamp;

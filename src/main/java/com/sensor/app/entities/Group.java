@@ -5,15 +5,16 @@ import io.vertx.sqlclient.Row;
 import java.util.Objects;
 
 public class Group {
-    public static final String CREATE_GROUP = "INSERT INTO Group (name, mqtt_channel, home_id, suppressed) VALUES (?, ?, ?, ?)";
-    public static final String GET_GROUP_ID = "SELECT * FROM Group WHERE group_id = ?";
-    public static final String GET_ALL_GROUP = "SELECT * FROM Group";
-    public static final String UPDATE_GROUP = "UPDATE Group SET name = ?, mqtt_channel = ?, home_id = ?, suppressed = ? WHERE group_id = ?";
-    public static final String DELETE_GROUP = "DELETE FROM Group WHERE group_id = ?";
+    public static final String CREATE_GROUP = "INSERT INTO `Group` (name, mqtt_channel, home_id, suppressed) VALUES (?, ?, ?, ?)";
+    public static final String GET_GROUP_ID = "SELECT * FROM `Group` WHERE group_id = ?";
+    public static final String GET_ALL_GROUP = "SELECT * FROM `Group`";
+    public static final String GET_BY_USER = "SELECT * FROM `Group` INNER JOIN Home ON `Group`.home_id = Home.home_id INNER JOIN User ON Home.user_id = User.user_id WHERE User.user_id = ?";
+    public static final String UPDATE_GROUP = "UPDATE `Group` SET name = ?, mqtt_channel = ?, home_id = ?, suppressed = ? WHERE group_id = ?";
+    public static final String DELETE_GROUP = "DELETE FROM `Group` WHERE group_id = ?";
 
     private Integer group_id;
     private String name;
-    private String mqttChannel;
+    private String mqtt_channel;
     private Integer home_id;
     private Boolean suppressed;
 
@@ -32,7 +33,7 @@ public class Group {
     public Group(int group_id, String name, String mqttChannel) {
         this.group_id = group_id;
         this.name = name;
-        this.mqttChannel = mqttChannel;
+        this.mqtt_channel = mqttChannel;
     }
 
     public int getGroup_id() {
@@ -52,11 +53,11 @@ public class Group {
     }
 
     public String getMqttChannel() {
-        return mqttChannel;
+        return mqtt_channel;
     }
 
     public void setMqttChannel(String mqttChannel) {
-        this.mqttChannel = mqttChannel;
+        this.mqtt_channel = mqttChannel;
     }
 
     public Integer getHome_id() {
@@ -80,7 +81,7 @@ public class Group {
 
     @Override
     public int hashCode() {
-        return Objects.hash(group_id, name, mqttChannel);
+        return Objects.hash(group_id, name, mqtt_channel);
     }
 
     @Override
@@ -90,11 +91,11 @@ public class Group {
         Group other = (Group) obj;
         return group_id == other.group_id &&
                Objects.equals(name, other.name) &&
-               Objects.equals(mqttChannel, other.mqttChannel);
+               Objects.equals(mqtt_channel, other.mqtt_channel);
     }
 
     @Override
     public String toString() {
-        return "Group [id=" + group_id + ", name=" + name + ", mqttChannel=" + mqttChannel + "]";
+        return "Group [id=" + group_id + ", name=" + name + ", mqtt_channel=" + mqtt_channel + "]";
     }
 }
