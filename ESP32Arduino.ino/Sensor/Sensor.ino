@@ -1,7 +1,6 @@
 #include "PubSubClient.h"
 #include "WiFi.h"
 #include "ArduinoJson.h"
-#include "DHT.h"
 #include <HTTPClient.h>
 
 //Para el sensor ultrasonido
@@ -209,7 +208,7 @@ void loop() {
 
 
      } else {
-      Serial.println("Error al leer el sensor DHT!");
+      Serial.println("Error al leer el sensor!");
      }
 
 
